@@ -12,10 +12,10 @@
         var d1; //length of first parallelogram's diagonal or 'AC' line (built of 1-st and 3-rd user's points)
         var thp; //half perimeter of 'ABC' triangle (this triangle is an exactly half of parallelogram)
         var cntr = {
-                    xpos: 0,
-                    ypos: 0
+                    posX: 0,
+                    posY: 0
                     }; //object with x  and y ccordinates of midpoint of d1 (which is also a center of circle)
-        var dr = 5.5; //radius of red dots
+        var dotRadius = 5.5; //radius of red dots
         var r; //radius of circle
         var paint = true;
 
@@ -23,18 +23,24 @@
         var dragging = false;
         // Selected point during dragging
         var selectedPoint;
-        var xOffset = 5;
-        var yOffset = 5; //offsets relative to the zero point of the viewport
+
+        //offsets relative to the zero point of the viewport
+        const hitboxOffset = 9//difference between hitbox registration and red dot center.
+        //I'm not sure what exactly affects the value of this variable, 
+        //so I just temporary hardcoded '9' because it works
+        const rect = canvas.getBoundingClientRect();
+        const offsetX = rect.left + window.scrollX + hitboxOffset;
+        const offsetY = rect.top + window.scrollY + hitboxOffset;
         
         var mouse = {
-            xpos: 0,
-            ypos: 0,
+            posX: 0,
+            posY: 0,
             down: false
         };
 
         var Point = function(x,y){
-            this.xpos = x;
-            this.ypos = y;
+            this.posX = x;
+            this.posY = y;
             this.isSelected = false;
 
             this.contr = 0;//array index of opposite point;
@@ -57,8 +63,8 @@
         function setPoint(e){
 
             if(!paint)return;
-            makePointColored(e.clientX-xOffset, e.clientY-yOffset,'red');
-            point = new Point (e.clientX-xOffset, e.clientY-yOffset)
+            makePointColored(e.clientX-offsetX, e.clientY-offsetY,'red');
+            point = new Point (e.clientX-offsetX, e.clientY-offsetY)
             points.push(point);
             if(points.length!=3) return;
           
@@ -73,7 +79,7 @@
         };
 
         function findFourthPoint(arr){
-            arr.push( new Point( (arr[2].xpos+(arr[0].xpos-arr[1].xpos)),(arr[2].ypos + (arr[0].ypos - arr[1].ypos)) ) );
+            arr.push( new Point( (arr[2].posX+(arr[0].posX-arr[1].posX)),(arr[2].posY + (arr[0].posY - arr[1].posY)) ) );
             //finding of x and y coordinates of 4-th point 'D' of 'ABCD' parallelogram
         };
 
@@ -85,10 +91,10 @@
             var ps = document.getElementById('PS');
             var cs = document.getElementById('CS');
     
-            a.value = dots[0].xpos||'in process';
-            b.value = dots[1].xpos||'in process';
-            c.value = dots[2].xpos||'in process';
-            d.value = dots[3].xpos||'in process';
+            a.value = dots[0].posX||'in process';
+            b.value = dots[1].posX||'in process';
+            c.value = dots[2].posX||'in process';
+            d.value = dots[3].posX||'in process';
             ps.value = s||'in process';
             cs.value = s||'in process';
         }
@@ -107,13 +113,11 @@
         
 
         function calcParameters (dots){ 
-            d1 = Math.sqrt( Math.pow((dots[2].xpos-dots[0].xpos),2) + Math.pow((dots[2].ypos-dots[0].ypos),2) );
-            // d1 = Math.sqrt( Math.pow((coord_X[2]-coord_X[0]),2) + Math.pow((coord_Y[2]-coord_Y[0]),2) );
+            d1 = Math.sqrt( Math.pow((dots[2].posX-dots[0].posX),2) + Math.pow((dots[2].posY-dots[0].posY),2) );
 
-            ab = Math.sqrt( Math.pow((dots[1].xpos-dots[0].xpos),2) + Math.pow((dots[1].ypos-dots[0].ypos),2) );
+            ab = Math.sqrt( Math.pow((dots[1].posX-dots[0].posX),2) + Math.pow((dots[1].posY-dots[0].posY),2) );
 
-            bc = Math.sqrt( Math.pow((dots[2].xpos-dots[1].xpos),2) + Math.pow((dots[2].ypos-dots[1].ypos),2) );
-            // bc = Math.sqrt( Math.pow((coord_X[2]-coord_X[1]),2) + Math.pow((coord_Y[2]-coord_Y[1]),2) );
+            bc = Math.sqrt( Math.pow((dots[2].posX-dots[1].posX),2) + Math.pow((dots[2].posY-dots[1].posY),2) );
             
             thp = (d1 + ab + bc)/2;
 
@@ -123,8 +127,8 @@
 
             r = Math.sqrt(s/Math.PI);
 
-            cntr.xpos=(dots[0].xpos+dots[2].xpos)/2;
-            cntr.ypos=(dots[0].ypos+dots[2].ypos)/2;
+            cntr.posX=(dots[0].posX+dots[2].posX)/2;
+            cntr.posY=(dots[0].posY+dots[2].posY)/2;
         };
 
         function buildFigure (dots, rad, center){          
@@ -134,47 +138,45 @@
             ctx.beginPath();
             ctx.strokeStyle = 'blue';
             ctx.lineWidth = '3';
-            ctx.moveTo(dots[0].xpos, dots[0].ypos);
+            ctx.moveTo(dots[0].posX, dots[0].posY);
             for (i=1; i<4; i++){
-                ctx.lineTo(dots[i].xpos, dots[i].ypos);
+                ctx.lineTo(dots[i].posX, dots[i].posY);
                 ctx.stroke();
             }
-            ctx.lineTo(dots[0].xpos, dots[0].ypos);
+            ctx.lineTo(dots[0].posX, dots[0].posY);
             ctx.stroke();
             
-            buildCircle(center.xpos, center.ypos, rad, 'yellow');
+            buildCircle(center.posX, center.posY, rad, 'yellow');
             showParameters(points, s);
         };
 
         function buildPoints (dots){
             for(var i=0; i <dots.length; i++){
-                if(dots[i].isSelected) {makePointColored(dots[i].xpos, dots[i].ypos,'green');}
-                makePointColored(dots[i].xpos, dots[i].ypos,'red');
+                if(dots[i].isSelected) {makePointColored(dots[i].posX, dots[i].posY,'green');}
+                makePointColored(dots[i].posX, dots[i].posY,'red');
             }
         };
 
         function isCursorInDot(x,y,dot){
-            return x > dot.xpos - 5.5 && x < dot.xpos + 5.5 && y > dot.ypos - 5.5 && y < dot.ypos + 5.5;
+            return x > dot.posX - 5.5 && x < dot.posX + 5.5 && y > dot.posY - 5.5 && y < dot.posY + 5.5;
         };
 
         //set new coordinates to selected point and it's opposite one
         function makeNewCoord(selectedPoint, mousePosition){
-            var dx = selectedPoint.xpos-mousePosition.xpos;
-            var dy = selectedPoint.ypos-mousePosition.ypos;
-            selectedPoint.xpos=mousePosition.xpos;
-            selectedPoint.ypos=mousePosition.ypos;
+            var dx = selectedPoint.posX-mousePosition.posX;
+            var dy = selectedPoint.posY-mousePosition.posY;
+            selectedPoint.posX=mousePosition.posX;
+            selectedPoint.posY=mousePosition.posY;
             var op = selectedPoint.contr;
-            points[op].xpos = points[op].xpos+dx;
-            points[op].ypos = points[op].ypos+dy;
+            points[op].posX = points[op].posX+dx;
+            points[op].posY = points[op].posY+dy;
         };
 
         function movePoint(e){
             if(paint)return;
-        
-            var rect = canv.getBoundingClientRect(); // Get the dimensions and position of the canvas relative to the viewport
-        
-            mouse.xpos = e.clientX - rect.left - xOffset; // Adjust mouse coordinates relative to canvas
-            mouse.ypos = e.clientY - rect.top - yOffset;
+              
+            mouse.posX = e.clientX - offsetX;
+            mouse.posY = e.clientY - offsetY;
         
             for (let j = 0; j < points.length; j++) {
                 if(points[j].isSelected) 
@@ -188,10 +190,9 @@
         
         function selectPoint(e){
             if(paint) return;
-            var rect = canv.getBoundingClientRect(); // Get the dimensions and position of the canvas relative to the viewport
         
-            var mx = e.clientX - rect.left - 3; // Adjust mouse coordinates relative to canvas
-            var my = e.clientY - rect.top - 3;
+            var mx = e.clientX - offsetX;
+            var my = e.clientY - offsetY;
         
             for (var i = 0; i<points.length; i++){
                 if(isCursorInDot(mx, my, points[i])){
@@ -200,7 +201,7 @@
             }
             for (var i = 0; i<points.length; i++){
                 if(points[i].isSelected){
-                    makePointColored(points[i].xpos, points[i].ypos,'green');
+                    makePointColored(points[i].posX, points[i].posY,'green');
                 }
             }
         }
@@ -210,7 +211,7 @@
             if(paint)return;
             for (var i = 0; i<points.length; i++){
                 points[i].isSelected=false;
-                makePointColored(points[i].xpos, points[i].ypos, 'red');
+                makePointColored(points[i].posX, points[i].posY, 'red');
             }
         };
 
