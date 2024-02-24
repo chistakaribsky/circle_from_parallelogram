@@ -1,0 +1,41 @@
+body{
+  margin: 0;
+}
+
+.visible{
+  display: block;
+}
+
+.hidden{
+  display: none;
+}
+
+.work-space{
+  display: flex; 
+  justify-content: space-between;
+  /* margin-top: 60px;
+  margin-bottom: 60px; */
+}
+
+#canvas{
+  display: block; 
+  /* border: 3px solid black; */
+}
+
+.coords-zone{
+  width: 500px;
+  height: 300px;
+}
+
+.coords-list{
+  list-style: none;
+}
+
+.coords-list li{
+  display: flex; 
+  flex-direction: column;
+}
+
+
+
+
