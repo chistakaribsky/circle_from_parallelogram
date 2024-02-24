@@ -23,6 +23,8 @@
         var dragging = false;
         // Selected point during dragging
         var selectedPoint;
+        var xOffset = 5;
+        var yOffset = 5; //offsets relative to the zero point of the viewport
         
         var mouse = {
             xpos: 0,
@@ -55,8 +57,8 @@
         function setPoint(e){
 
             if(!paint)return;
-            makePointColored(e.clientX, e.clientY,'red');
-            point = new Point (e.clientX, e.clientY)
+            makePointColored(e.clientX-xOffset, e.clientY-yOffset,'red');
+            point = new Point (e.clientX-xOffset, e.clientY-yOffset)
             points.push(point);
             if(points.length!=3) return;
           
@@ -168,10 +170,12 @@
 
         function movePoint(e){
             if(paint)return;
-
-            mouse.xpos = e.clientX;
-            mouse.ypos = e.clientY;
-
+        
+            var rect = canv.getBoundingClientRect(); // Get the dimensions and position of the canvas relative to the viewport
+        
+            mouse.xpos = e.clientX - rect.left - xOffset; // Adjust mouse coordinates relative to canvas
+            mouse.ypos = e.clientY - rect.top - yOffset;
+        
             for (let j = 0; j < points.length; j++) {
                 if(points[j].isSelected) 
                 makeNewCoord(points[j],mouse);
@@ -180,24 +184,26 @@
                 calcParameters(points);
                 buildFigure(points,r,cntr);
             }
-        };
-
+        }
+        
         function selectPoint(e){
             if(paint) return;
-            var mx = e.clientX;
-            var my = e.clientY;
-
+            var rect = canv.getBoundingClientRect(); // Get the dimensions and position of the canvas relative to the viewport
+        
+            var mx = e.clientX - rect.left - 3; // Adjust mouse coordinates relative to canvas
+            var my = e.clientY - rect.top - 3;
+        
             for (var i = 0; i<points.length; i++){
                 if(isCursorInDot(mx, my, points[i])){
                     points[i].isSelected=true;
-                    }     
+                }     
             }
             for (var i = 0; i<points.length; i++){
                 if(points[i].isSelected){
-                        makePointColored(points[i].xpos, points[i].ypos,'green');
-                    }
+                    makePointColored(points[i].xpos, points[i].ypos,'green');
+                }
             }
-        };
+        }
 
         //set dots attributes to 'defaults'
         function refresh(){
