@@ -15,6 +15,7 @@ body{
   justify-content: space-between;
   margin-top: 60px;
   margin-left: 60px;
+  margin-bottom: 60px;
 }
 
 #canvas{
@@ -34,6 +35,10 @@ body{
 .coords-list li{
   display: flex; 
   flex-direction: column;
+}
+
+.info{
+  margin-left: 60px;
 }
 
 
