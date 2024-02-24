@@ -13,13 +13,13 @@ body{
 .work-space{
   display: flex; 
   justify-content: space-between;
-  /* margin-top: 60px;
-  margin-bottom: 60px; */
+  margin-top: 60px;
+  margin-left: 60px;
 }
 
 #canvas{
   display: block; 
-  /* border: 3px solid black; */
+  border: 3px solid black;
 }
 
 .coords-zone{
