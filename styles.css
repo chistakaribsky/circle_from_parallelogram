@@ -37,6 +37,10 @@ body{
   flex-direction: column;
 }
 
+.coords-list li input{
+  width: 90px;
+}
+
 .info{
   margin-left: 60px;
 }
